@@ -605,6 +605,86 @@ async function buscar() {
 
     alert(mensagem);
 }
+async function cadastrarVeiculo() {
+    const nome = document.getElementById("nome_proprietario").value.trim();
+    const email = document.getElementById("email_proprietario").value.trim();
+    const senha = document.getElementById("senha_proprietario").value;
+    const telefone = document.getElementById("telefone_proprietario").value.trim();
+
+    const marca = document.getElementById("marca_veiculo").value.trim();
+    const modelo = document.getElementById("modelo_veiculo").value.trim();
+    const ano = document.getElementById("ano_veiculo").value;
+    const cidade = document.getElementById("cidade_veiculo").value.trim();
+
+    const diaria = document.getElementById("preco_diaria_veiculo").value;
+    const semanal = document.getElementById("preco_semanal_veiculo").value;
+    const mensal = document.getElementById("preco_mensal_veiculo").value;
+
+    if (!nome || !email || !senha || !telefone || !marca || !modelo || !ano || !cidade) {
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+    }
+
+    if (senha.length < 6) {
+        alert("A senha deve ter pelo menos 6 caracteres.");
+        return;
+    }
+
+    const { data: cadastro, error: erroCadastro } =
+        await supabaseClient.auth.signUp({
+            email: email,
+            password: senha
+        });
+
+    if (erroCadastro) {
+        alert("Erro ao criar conta: " + erroCadastro.message);
+        return;
+    }
+
+    const usuario = cadastro.user;
+
+    if (!usuario) {
+        alert("Não foi possível criar a conta.");
+        return;
+    }
+
+    const { error: erroUsuario } = await supabaseClient
+        .from("usuarios")
+        .insert([{
+            id: usuario.id,
+            nome: nome,
+            email: email,
+            telefone: telefone,
+            tipo: "proprietario"
+        }]);
+
+    if (erroUsuario) {
+        alert("Erro ao salvar proprietário: " + erroUsuario.message);
+        return;
+    }
+
+    const { error: erroVeiculo } = await supabaseClient
+        .from("veiculos")
+        .insert([{
+            proprietario_id: usuario.id,
+            marca: marca,
+            modelo: modelo,
+            ano: Number(ano),
+            cidade: cidade,
+            preco_diaria: diaria ? Number(diaria) : null,
+            preco_semanal: semanal ? Number(semanal) : null,
+            preco_mensal: mensal ? Number(mensal) : null,
+            status: "pendente",
+            destaque: false
+        }]);
+
+    if (erroVeiculo) {
+        alert("Erro ao cadastrar veículo: " + erroVeiculo.message);
+        return;
+    }
+
+    alert("Cadastro realizado com sucesso! O veículo será analisado antes de aparecer no site.");
+}
 </script>
 
 <!-- CADASTRO DO PROPRIETÁRIO -->
@@ -629,7 +709,9 @@ async function buscar() {
             <input id="email_proprietario" type="email"
                 placeholder="E-mail"
                 style="width:100%; padding:14px; margin:7px 0;">
-
+            <input id="senha_proprietario" type="password"
+    placeholder="Crie uma senha"
+    style="width:100%; padding:14px; margin:7px 0;">
             <input id="telefone_proprietario" type="tel"
                 placeholder="Telefone / WhatsApp"
                 style="width:100%; padding:14px; margin:7px 0;">
@@ -665,7 +747,7 @@ async function buscar() {
                 placeholder="Preço mensal"
                 style="width:100%; padding:14px; margin:7px 0;">
 
-            <button type="button"
+            <button type="button" onclick="cadastrarVeiculo()"
                 style="width:100%; padding:15px; margin-top:15px;
                 background:#20c463; color:white; border:0;
                 border-radius:10px; font-size:17px; font-weight:bold;">
