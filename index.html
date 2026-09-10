@@ -549,23 +549,62 @@
 </footer>
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-  function buscar() {
+const SUPABASE_URL = "https://clgwzljyauqezdogeiq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_g_BCrMrWOq9sEt9LLJIyeA_YeNv4YDA";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function buscar() {
     const cidade = document.getElementById("cidade").value;
     const modelo = document.getElementById("modelo").value;
 
-    let mensagem = "Mostrando veículos";
+    let consulta = supabaseClient
+        .from("veiculos")
+        .select("*")
+        .eq("status", "aprovado");
 
     if (cidade) {
-      mensagem += " em " + cidade;
+        consulta = consulta.ilike("cidade", %${cidade}%);
     }
 
     if (modelo) {
-      mensagem += " - modelo " + modelo;
+        consulta = consulta.ilike("modelo", %${modelo}%);
     }
 
+    const { data, error } = await consulta;
+
+    if (error) {
+        console.error(error);
+        alert("Erro ao buscar veículos. Verifique a conexão com o Supabase.");
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        alert("Nenhum veículo encontrado para essa pesquisa.");
+        return;
+    }
+
+    let mensagem = Encontramos ${data.length} veículo(s)!\\n\\n;
+
+    data.forEach((veiculo, index) => {
+        mensagem += ${index + 1}. ${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}\\n;
+        mensagem += Cidade: ${veiculo.cidade}\\n;
+
+        if (veiculo.preco_diaria) {
+            mensagem += Diária: R$ ${veiculo.preco_diaria}\\n;
+        }
+
+        mensagem += "\\n";
+    });
+
     alert(mensagem);
-  }
+}
 </script>
 
 </body>
