@@ -607,5 +607,73 @@ async function buscar() {
 }
 </script>
 
+<!-- CADASTRO DO PROPRIETÁRIO -->
+<section id="cadastro-proprietario" style="padding:50px 20px; background:#ffffff;">
+    <div style="max-width:700px; margin:auto;">
+        <h2 style="text-align:center; color:#172033;">
+            🚗 Cadastre seu carro para alugar
+        </h2>
+
+        <p style="text-align:center; color:#666;">
+            Você é proprietário? Cadastre seu veículo e encontre motoristas.
+        </p>
+
+        <div style="background:#f5f7fa; padding:25px; border-radius:15px;">
+
+            <h3>Seus dados</h3>
+
+            <input id="nome_proprietario" type="text"
+                placeholder="Nome completo"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="email_proprietario" type="email"
+                placeholder="E-mail"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="telefone_proprietario" type="tel"
+                placeholder="Telefone / WhatsApp"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <h3>Dados do veículo</h3>
+
+            <input id="marca_veiculo" type="text"
+                placeholder="Marca (ex.: Fiat)"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="modelo_veiculo" type="text"
+                placeholder="Modelo (ex.: Mobi)"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="ano_veiculo" type="number"
+                placeholder="Ano"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="cidade_veiculo" type="text"
+                placeholder="Cidade"
+                value="Marília"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="preco_diaria_veiculo" type="number"
+                placeholder="Preço da diária"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="preco_semanal_veiculo" type="number"
+                placeholder="Preço semanal"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <input id="preco_mensal_veiculo" type="number"
+                placeholder="Preço mensal"
+                style="width:100%; padding:14px; margin:7px 0;">
+
+            <button type="button"
+                style="width:100%; padding:15px; margin-top:15px;
+                background:#20c463; color:white; border:0;
+                border-radius:10px; font-size:17px; font-weight:bold;">
+                Cadastrar meu veículo
+            </button>
+
+        </div>
+    </div>
+</section>
 </body>
 </html>
