@@ -570,18 +570,18 @@ async function buscar() {
         .eq("status", "aprovado");
 
     if (cidade) {
-        consulta = consulta.ilike("cidade", %${cidade}%);
+        consulta = consulta.ilike("cidade", `%${cidade}%`);
     }
 
     if (modelo) {
-        consulta = consulta.ilike("modelo", %${modelo}%);
+        consulta = consulta.ilike("modelo", `%${modelo}%`);
     }
 
     const { data, error } = await consulta;
 
     if (error) {
         console.error(error);
-        alert("Erro ao buscar veículos. Verifique a conexão com o Supabase.");
+        alert("Erro ao buscar veículos: " + error.message);
         return;
     }
 
@@ -590,17 +590,17 @@ async function buscar() {
         return;
     }
 
-    let mensagem = Encontramos ${data.length} veículo(s)!\\n\\n;
+    let mensagem = `Encontramos ${data.length} veículo(s)!\n\n`;
 
     data.forEach((veiculo, index) => {
-        mensagem += ${index + 1}. ${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}\\n;
-        mensagem += Cidade: ${veiculo.cidade}\\n;
+        mensagem += `${index + 1}. ${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}\n`;
+        mensagem += `Cidade: ${veiculo.cidade}\n`;
 
         if (veiculo.preco_diaria) {
-            mensagem += Diária: R$ ${veiculo.preco_diaria}\\n;
+            mensagem += `Diária: R$ ${veiculo.preco_diaria}\n`;
         }
 
-        mensagem += "\\n";
+        mensagem += "\n";
     });
 
     alert(mensagem);
