@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Aluga Fácil Veículos - encontre carros para Uber, 99 e outros aplicativos em Marília e região.">
+  <title>Aluga Fácil Veículos</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav {
+      max-width: 1200px;
+      margin: auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .logo span {
+      color: #16a34a;
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #374151;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #16a34a;
+    }
+
+    .btn {
+      display: inline-block;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-green {
+      background: #16a34a;
+      color: white;
+    }
+
+    .btn-dark {
+      background: #172033;
+      color: white;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #102018, #166534);
+      color: white;
+      padding: 75px 20px;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 50px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 5vw, 64px);
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      color: #86efac;
+    }
+
+    .hero p {
+      font-size: 19px;
+      line-height: 1.6;
+      color: #dcfce7;
+      margin-bottom: 30px;
+      max-width: 650px;
+    }
+
+    .search-box {
+      background: white;
+      padding: 22px;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.2);
+      color: #172033;
+    }
+
+    .search-box h2 {
+      margin-bottom: 16px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 15px;
+      background: white;
+    }
+
+    .search-button {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .section {
+      max-width: 1200px;
+      margin: auto;
+      padding: 65px 20px;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: #6b7280;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 25px rgba(0,0,0,.05);
+    }
+
+    .car-image {
+      height: 160px;
+      border-radius: 12px;
+      background: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 55px;
+      margin-bottom: 18px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .location {
+      color: #6b7280;
+      margin-bottom: 18px;
+    }
+
+    .price {
+      font-size: 23px;
+      font-weight: 800;
+      color: #16a34a;
+      margin-bottom: 15px;
+    }
+
+    .features {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .feature {
+      background: #f3f4f6;
+      padding: 7px 9px;
+      border-radius: 7px;
+      font-size: 12px;
+    }
+
+    .card .btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    .how {
+      background: white;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+    }
+
+    .step {
+      text-align: center;
+      padding: 25px;
+    }
+
+    .step-icon {
+      width: 65px;
+      height: 65px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: #dcfce7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .step h3 {
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .cta {
+      background: #172033;
+      color: white;
+      text-align: center;
+      padding: 65px 20px;
+    }
+
+    .cta h2 {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      color: #d1d5db;
+      margin-bottom: 25px;
+    }
+
+    footer {
+      background: #0b1020;
+      color: white;
+      padding: 35px 20px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    footer p {
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 800px) {
+      nav a:not(.btn) {
+        display: none;
+      }
+
+      .hero-content {
+        grid-template-columns: 1fr;
+      }
+
+      .cards,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">Aluga Fácil <span>Veículos</span></div>
+
+    <nav>
+      <a href="#carros">Carros</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#proprietario">Para proprietários</a>
+      <a href="#" class="btn btn-green">Entrar</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+
+    <div>
+      <h1>Encontre o carro ideal para <span>trabalhar.</span></h1>
+
+      <p>
+        Alugue veículos para Uber, 99 e outros aplicativos
+        diretamente com proprietários em Marília e região.
+      </p>
+
+      <a href="#carros" class="btn btn-green">
+        Encontrar um carro
+      </a>
+    </div>
+
+    <div class="search-box">
+      <h2>🔎 Procurar veículo</h2>
+
+      <div class="search-row">
+        <select id="cidade">
+          <option value="">Cidade</option>
+          <option value="Marília">Marília</option>
+          <option value="Bauru">Bauru</option>
+          <option value="Ourinhos">Ourinhos</option>
+          <option value="Assis">Assis</option>
+        </select>
+
+        <select id="modelo">
+          <option value="">Modelo</option>
+          <option value="Mobi">Fiat Mobi</option>
+          <option value="Kwid">Renault Kwid</option>
+          <option value="Gol">Volkswagen Gol</option>
+          <option value="Argo">Fiat Argo</option>
+        </select>
+      </div>
+
+      <button class="btn btn-green search-button" onclick="buscar()">
+        Buscar veículos
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" id="carros">
+
+  <div class="section-title">
+    <h2>Veículos em destaque</h2>
+    <p>Confira alguns dos veículos disponíveis para locação.</p>
+  </div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="car-image">🚗</div>
+
+      <span class="badge">DESTAQUE</span>
+
+      <h3>Fiat Mobi 2018</h3>
+
+      <div class="location">📍 Marília - SP</div>
+
+      <div class="features">
+        <span class="feature">1.0 Flex</span>
+        <span class="feature">4 portas</span>
+        <span class="feature">Ar-condicionado</span>
+      </div>
+
+      <div class="price">R$ 700 / semana</div>
+
+      <a href="#" class="btn btn-dark">Ver veículo</a>
+    </div>
+
+
+    <div class="card">
+      <div class="car-image">🚙</div>
+
+      <span class="badge">PARA UBER</span>
+
+      <h3>Renault Kwid</h3>
+
+      <div class="location">📍 Marília - SP</div>
+
+      <div class="features">
+        <span class="feature">1.0 Flex</span>
+        <span class="feature">4 portas</span>
+        <span class="feature">Econômico</span>
+      </div>
+
+      <div class="price">Consulte o proprietário</div>
+
+      <a href="#" class="btn btn-dark">Ver veículo</a>
+    </div>
+
+
+    <div class="card">
+      <div class="car-image">🚘</div>
+
+      <span class="badge">PARA APLICATIVO</span>
+
+      <h3>Fiat Argo 1.0</h3>
+
+      <div class="location">📍 Marília - SP</div>
+
+      <div class="features">
+        <span class="feature">Flex</span>
+        <span class="feature">4 portas</span>
+        <span class="feature">Ar-condicionado</span>
+      </div>
+
+      <div class="price">Consulte o proprietário</div>
+
+      <a href="#" class="btn btn-dark">Ver veículo</a>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="how" id="como-funciona">
+
+  <div class="section">
+
+    <div class="section-title">
+      <h2>Como funciona?</h2>
+      <p>Alugar seu próximo carro ficou mais fácil.</p>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-icon">🔎</div>
+        <h3>1. Encontre</h3>
+        <p>
+          Pesquise veículos disponíveis na sua cidade
+          e encontre o que combina com você.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">💬</div>
+        <h3>2. Converse</h3>
+        <p>
+          Entre em contato diretamente com o proprietário
+          para combinar as condições.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-icon">🚗</div>
+        <h3>3. Alugue</h3>
+        <p>
+          Combine a locação diretamente com o proprietário
+          e comece a trabalhar.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<section class="cta" id="proprietario">
+
+  <h2>Tem um carro para alugar?</h2>
+
+  <p>
+    Cadastre seu veículo e encontre motoristas interessados
+    em Marília e região.
+  </p>
+
+  <a href="#" class="btn btn-green">
+    Quero anunciar meu carro
+  </a>
+
+</section>
+
+
+<footer>
+
+  <div class="footer-content">
+
+    <div>
+      <strong>Aluga Fácil Veículos</strong>
+      <p>Aluguel de veículos de forma simples e segura.</p>
+    </div>
+
+    <div>
+      <strong>Marília - SP</strong>
+      <p>Conectando proprietários e motoristas.</p>
+    </div>
+
+  </div>
+
+</footer>
+
+
+<script>
+  function buscar() {
+    const cidade = document.getElementById("cidade").value;
+    const modelo = document.getElementById("modelo").value;
+
+    let mensagem = "Mostrando veículos";
+
+    if (cidade) {
+      mensagem += " em " + cidade;
+    }
+
+    if (modelo) {
+      mensagem += " - modelo " + modelo;
+    }
+
+    alert(mensagem);
+  }
+</script>
+
+</body>
+</html>
