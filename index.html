@@ -631,22 +631,46 @@ async function cadastrarVeiculo() {
     }
 
     const { data: cadastro, error: erroCadastro } =
-        await supabaseClient.auth.signUp({
+    await supabaseClient.auth.signUp({
+        email: email,
+        password: senha,
+        options: {
+            data: {
+                nome: nome,
+                telefone: telefone,
+                tipo: "proprietario"
+            }
+        }
+    });
+
+if (erroCadastro) {
+    alert("Erro ao criar conta: " + erroCadastro.message);
+    return;
+}
+
+let sessao = cadastro.session;
+
+if (!sessao) {
+    const { data: login, error: erroLogin } =
+        await supabaseClient.auth.signInWithPassword({
             email: email,
             password: senha
         });
 
-    if (erroCadastro) {
-        alert("Erro ao criar conta: " + erroCadastro.message);
+    if (erroLogin) {
+        alert("Conta criada, mas não foi possível autenticar: " + erroLogin.message);
         return;
     }
 
-    const usuario = cadastro.user;
+    sessao = login.session;
+}
 
-    if (!usuario) {
-        alert("Não foi possível criar a conta.");
-        return;
-    }
+const usuario = sessao?.user;
+
+if (!usuario) {
+    alert("Não foi possível autenticar o proprietário.");
+    return;
+}
 
     const { error: erroUsuario } = await supabaseClient
     .from("usuarios")
