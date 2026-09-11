@@ -402,71 +402,10 @@
     <p>Confira alguns dos veículos disponíveis para locação.</p>
   </div>
 
-  <div class="cards">
+  <div class="cards" id="lista-veiculos">
+</div>
 
-    <div class="card">
-      <div class="car-image">🚗</div>
-
-      <span class="badge">DESTAQUE</span>
-
-      <h3>Fiat Mobi 2018</h3>
-
-      <div class="location">📍 Marília - SP</div>
-
-      <div class="features">
-        <span class="feature">1.0 Flex</span>
-        <span class="feature">4 portas</span>
-        <span class="feature">Ar-condicionado</span>
-      </div>
-
-      <div class="price">R$ 700 / semana</div>
-
-      <a href="#" class="btn btn-dark">Ver veículo</a>
-    </div>
-
-
-    <div class="card">
-      <div class="car-image">🚙</div>
-
-      <span class="badge">PARA UBER</span>
-
-      <h3>Renault Kwid</h3>
-
-      <div class="location">📍 Marília - SP</div>
-
-      <div class="features">
-        <span class="feature">1.0 Flex</span>
-        <span class="feature">4 portas</span>
-        <span class="feature">Econômico</span>
-      </div>
-
-      <div class="price">Consulte o proprietário</div>
-
-      <a href="#" class="btn btn-dark">Ver veículo</a>
-    </div>
-
-
-    <div class="card">
-      <div class="car-image">🚘</div>
-
-      <span class="badge">PARA APLICATIVO</span>
-
-      <h3>Fiat Argo 1.0</h3>
-
-      <div class="location">📍 Marília - SP</div>
-
-      <div class="features">
-        <span class="feature">Flex</span>
-        <span class="feature">4 portas</span>
-        <span class="feature">Ar-condicionado</span>
-      </div>
-
-      <div class="price">Consulte o proprietário</div>
-
-      <a href="#" class="btn btn-dark">Ver veículo</a>
-    </div>
-
-  </div>
+       
 </section>
 
 
@@ -605,6 +544,86 @@ async function buscar() {
 
     alert(mensagem);
 }
+    async function carregarVeiculos() {
+    const lista = document.getElementById("lista-veiculos");
+
+    if (!lista) return;
+
+    lista.innerHTML = "<p>Carregando veículos...</p>";
+
+    const { data: veiculos, error } = await supabaseClient
+        .from("veiculos")
+        .select("*")
+        .eq("status", "aprovado")
+        .order("destaque", { ascending: false })
+        .limit(6);
+
+    if (error) {
+        console.error("Erro ao carregar veículos:", error);
+        lista.innerHTML = "<p>Não foi possível carregar os veículos.</p>";
+        return;
+    }
+
+    if (!veiculos || veiculos.length === 0) {
+        lista.innerHTML = "<p>Nenhum veículo disponível no momento.</p>";
+        return;
+    }
+
+    lista.innerHTML = veiculos.map(veiculo => {
+
+        let preco = "Consulte o proprietário";
+
+        if (veiculo.preco_semanal) {
+            preco = `R$ ${Number(veiculo.preco_semanal).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2
+            })} / semana`;
+        } else if (veiculo.preco_diaria) {
+            preco = `R$ ${Number(veiculo.preco_diaria).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2
+            })} / dia`;
+        } else if (veiculo.preco_mensal) {
+            preco = `R$ ${Number(veiculo.preco_mensal).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2
+            })} / mês`;
+        }
+
+        const badge = veiculo.destaque ? "DESTAQUE" : "DISPONÍVEL";
+
+        return `
+            <div class="card">
+
+                <div class="car-image">🚗</div>
+
+                <span class="badge">${badge}</span>
+
+                <h3>${veiculo.marca || ""} ${veiculo.modelo || ""} ${veiculo.ano || ""}</h3>
+
+                <div class="location">
+                    📍 ${veiculo.cidade || "Cidade não informada"}
+                </div>
+
+                <div class="features">
+
+                    ${veiculo.combustivel ? <span class="feature">${veiculo.combustivel}</span> : ""}
+
+                    ${veiculo.quatro_portas ? <span class="feature">4 portas</span> : ""}
+
+                    ${veiculo.ar_condicionado ? <span class="feature">Ar-condicionado</span> : ""}
+
+                    ${veiculo.cambio ? <span class="feature">${veiculo.cambio}</span> : ""}
+
+                </div>
+
+                <div class="price">${preco}</div>
+
+                <a href="#" class="btn btn-dark">Ver veículo</a>
+
+            </div>
+        `;
+    }).join("");
+}
+
+document.addEventListener("DOMContentLoaded", carregarVeiculos);
 async function cadastrarVeiculo() {
     const nome = document.getElementById("nome_proprietario").value.trim();
     const email = document.getElementById("email_proprietario").value.trim();
