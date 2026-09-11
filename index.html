@@ -649,14 +649,14 @@ async function cadastrarVeiculo() {
     }
 
     const { error: erroUsuario } = await supabaseClient
-        .from("usuarios")
-        .insert([{
-            id: usuario.id,
-            nome: nome,
-            email: email,
-            telefone: telefone,
-            tipo: "proprietario"
-        }]);
+    .from("usuarios")
+    .update({
+        nome: nome,
+        email: email,
+        telefone: telefone,
+        tipo: "proprietario"
+    })
+    .eq("id", usuario.id);
 
     if (erroUsuario) {
         alert("Erro ao salvar proprietário: " + erroUsuario.message);
