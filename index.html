@@ -604,13 +604,10 @@ async function buscar() {
 
                 <div class="features">
 
-                    ${veiculo.combustivel ? <span class="feature">${veiculo.combustivel}</span> : ""}
-
-                    ${veiculo.quatro_portas ? <span class="feature">4 portas</span> : ""}
-
-                    ${veiculo.ar_condicionado ? <span class="feature">Ar-condicionado</span> : ""}
-
-                    ${veiculo.cambio ? <span class="feature">${veiculo.cambio}</span> : ""}
+                   ${veiculo.combustivel ? `<span class="feature">${veiculo.combustivel}</span>` : ""}
+${veiculo.quatro_portas ? `<span class="feature">4 portas</span>` : ""}
+${veiculo.ar_condicionado ? `<span class="feature">Ar-condicionado</span>` : ""}
+${veiculo.cambio ? `<span class="feature">${veiculo.cambio}</span>` : ""}
 
                 </div>
 
