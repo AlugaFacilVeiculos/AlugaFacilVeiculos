@@ -211,12 +211,60 @@ async function carregarPainel() {
                 <strong>Mensagem:</strong><br>
                 ${solicitacao.mensagem || "Nenhuma mensagem enviada."}
             </div>
+            <div style="margin-top:20px;">
+    <button class="btn-aceitar" onclick="alterarSolicitacao('${solicitacao.id}', 'aceito')">
+        ✅ Aceitar
+    </button>
 
+    <button class="btn-recusar" onclick="alterarSolicitacao('${solicitacao.id}', 'recusado')">
+        ❌ Recusar
+    </button>
+</div>
         </div>
 
     `).join("");
 }
+async function alterarSolicitacao(id, novoStatus) {
 
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        alert("Você precisa estar logado.");
+        return;
+    }
+
+    const confirmar = confirm(
+        novoStatus === "aceito"
+            ? "Deseja aceitar esta solicitação?"
+            : "Deseja recusar esta solicitação?"
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("solicitacoes_locacao")
+        .update({
+            status: novoStatus
+        })
+        .eq("id", id)
+        .eq("proprietario_id", user.id);
+
+    if (error) {
+        console.error(error);
+        alert("Não foi possível atualizar a solicitação.");
+        return;
+    }
+
+    alert(
+        novoStatus === "aceito"
+            ? "✅ Solicitação aceita!"
+            : "❌ Solicitação recusada!"
+    );
+
+    carregarPainel();
+}
 document.addEventListener("DOMContentLoaded", carregarPainel);
 
 </script>
