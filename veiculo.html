@@ -357,7 +357,88 @@ async function carregarVeiculo() {
         </div>
     `;
 }
+async function abrirFormularioInteresse() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
+    if (!user) {
+        alert("Você precisa estar logado para demonstrar interesse neste veículo.");
+        return;
+    }
+
+    const formulario = document.getElementById("formulario-interesse");
+
+    if (formulario) {
+        formulario.style.display = "block";
+        formulario.scrollIntoView({ behavior: "smooth" });
+    }
+}
+
+async function enviarInteresse() {
+    const resultado = document.getElementById("resultado-interesse");
+
+    const dataInicio = document.getElementById("data_inicio").value;
+    const dataFim = document.getElementById("data_fim").value;
+    const mensagem = document.getElementById("mensagem").value;
+
+    if (!dataInicio || !dataFim) {
+        resultado.textContent = "Informe a data de início e a data de término.";
+        return;
+    }
+
+    if (dataFim < dataInicio) {
+        resultado.textContent = "A data de término não pode ser anterior à data de início.";
+        return;
+    }
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        resultado.textContent = "Você precisa estar logado para enviar o interesse.";
+        return;
+    }
+
+    const parametros = new URLSearchParams(window.location.search);
+    const veiculoId = parametros.get("id");
+
+    if (!veiculoId) {
+        resultado.textContent = "Veículo não identificado.";
+        return;
+    }
+
+    const { data: veiculo, error: erroVeiculo } = await supabaseClient
+        .from("veiculos")
+        .select("proprietario_id")
+        .eq("id", veiculoId)
+        .eq("status", "aprovado")
+        .single();
+
+    if (erroVeiculo || !veiculo) {
+        resultado.textContent = "Não foi possível localizar o proprietário.";
+        return;
+    }
+
+    resultado.textContent = "Enviando solicitação...";
+
+    const { error } = await supabaseClient
+        .from("solicitacoes_locacao")
+        .insert({
+            veiculo_id: veiculoId,
+            motorista_id: user.id,
+            proprietario_id: veiculo.proprietario_id,
+            data_inicio: dataInicio,
+            data_fim: dataFim,
+            mensagem: mensagem,
+            status: "pendente"
+        });
+
+    if (error) {
+        console.error(error);
+        resultado.textContent = "Não foi possível enviar sua solicitação.";
+        return;
+    }
+
+    resultado.textContent = "✅ Interesse enviado com sucesso! O proprietário poderá entrar em contato com você.";
+}
 document.addEventListener("DOMContentLoaded", carregarVeiculo);
 
 </script>
