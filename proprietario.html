@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Proprietário | Aluga Fácil</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7f9;
+            color: #222;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .topo {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .topo h2 {
+            margin-top: 0;
+        }
+
+        .solicitacao {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .solicitacao h3 {
+            margin-top: 0;
+        }
+
+        .status {
+            display: inline-block;
+            background: #fff3cd;
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .info {
+            margin: 8px 0;
+        }
+
+        .vazio {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .erro {
+            background: #f8d7da;
+            color: #842029;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Aluga Fácil Veículos</h1>
+</header>
+
+<div class="container">
+
+    <div class="topo">
+        <h2>🏠 Painel do Proprietário</h2>
+        <p id="usuario-logado">Carregando...</p>
+    </div>
+
+    <h2>📩 Solicitações de interesse</h2>
+
+    <div id="lista-solicitacoes">
+        <p>Carregando solicitações...</p>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "https://clgwzlljyauqezdogeiq.supabase.co";
+
+/*
+    IMPORTANTE:
+    Na próxima etapa vamos colocar aqui a mesma chave
+    que já está funcionando no seu veiculo.html.
+*/
+
+const SUPABASE_KEY = "sb_publishable_g_BCrMrWOq9sEt9LLJIyeA_YeNv4YDA";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function carregarPainel() {
+
+    const usuarioLogado = document.getElementById("usuario-logado");
+    const lista = document.getElementById("lista-solicitacoes");
+
+    const {
+        data: { user },
+        error: erroLogin
+    } = await supabaseClient.auth.getUser();
+
+    if (erroLogin || !user) {
+        usuarioLogado.textContent = "Você precisa estar logado para acessar este painel.";
+        lista.innerHTML = `
+            <div class="erro">
+                Faça login para visualizar suas solicitações.
+            </div>
+        `;
+        return;
+    }
+
+    usuarioLogado.textContent = "Usuário logado: " + user.email;
+
+    const { data: solicitacoes, error } = await supabaseClient
+        .from("solicitacoes_locacao")
+        .select("*")
+        .eq("proprietario_id", user.id)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error(error);
+
+        lista.innerHTML = `
+            <div class="erro">
+                Não foi possível carregar as solicitações.
+            </div>
+        `;
+
+        return;
+    }
+
+    if (!solicitacoes || solicitacoes.length === 0) {
+        lista.innerHTML = `
+            <div class="vazio">
+                <h3>📭 Nenhuma solicitação</h3>
+                <p>Quando um motorista demonstrar interesse em um dos seus veículos, a solicitação aparecerá aqui.</p>
+            </div>
+        `;
+        return;
+    }
+
+    lista.innerHTML = solicitacoes.map(solicitacao => `
+
+        <div class="solicitacao">
+
+            <span class="status">
+                ${solicitacao.status || "pendente"}
+            </span>
+
+            <h3>🚗 Solicitação de aluguel</h3>
+
+            <div class="info">
+                <strong>Veículo:</strong>
+                ${solicitacao.veiculo_id}
+            </div>
+
+            <div class="info">
+                <strong>Motorista:</strong>
+                ${solicitacao.motorista_id}
+            </div>
+
+            <div class="info">
+                <strong>Data de início:</strong>
+                ${solicitacao.data_inicio || "Não informada"}
+            </div>
+
+            <div class="info">
+                <strong>Data de término:</strong>
+                ${solicitacao.data_fim || "Não informada"}
+            </div>
+
+            <div class="info">
+                <strong>Mensagem:</strong><br>
+                ${solicitacao.mensagem || "Nenhuma mensagem enviada."}
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+document.addEventListener("DOMContentLoaded", carregarPainel);
+
+</script>
+
+</body>
+</html>
