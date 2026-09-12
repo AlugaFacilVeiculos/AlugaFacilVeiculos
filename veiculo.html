@@ -219,33 +219,32 @@ async function carregarVeiculo() {
         return;
     }
 
-    document.title =
-        ${veiculo.marca || ""} ${veiculo.modelo || ""} | Aluga Fácil;
+    document.title = `${veiculo.marca || ""} ${veiculo.modelo || ""} | Aluga Fácil`;
 
     let recursos = "";
 
     if (veiculo.combustivel) {
-        recursos += <span class="recurso">⛽ ${veiculo.combustivel}</span>;
+        recursos += `<span class="recurso">⛽ ${veiculo.combustivel}</span>`;
     }
 
     if (veiculo.quatro_portas) {
-        recursos += <span class="recurso">🚪 4 portas</span>;
+        recursos += `<span class="recurso">🚪 4 portas</span>`;
     }
 
     if (veiculo.ar_condicionado) {
-        recursos += <span class="recurso">❄️ Ar-condicionado</span>;
+        recursos += `<span class="recurso">❄️ Ar-condicionado</span>`;
     }
 
     if (veiculo.cambio) {
-        recursos += <span class="recurso">⚙️ ${veiculo.cambio}</span>;
+        recursos += `<span class="recurso">⚙️ ${veiculo.cambio}</span>`;
     }
 
     if (veiculo.aceita_uber) {
-        recursos += <span class="recurso">🚗 Aceita Uber</span>;
+        recursos += `<span class="recurso">🚗 Aceita Uber</span>`;
     }
 
     if (veiculo.aceita_99) {
-        recursos += <span class="recurso">🚗 Aceita 99</span>;
+        recursos += `<span class="recurso">🚗 Aceita 99</span>`;
     }
 
     let precos = "";
