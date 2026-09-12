@@ -331,9 +331,28 @@ async function carregarVeiculo() {
                 ${recursos || "<span class='recurso'>Informações não informadas</span>"}
             </div>
 
-            <a href="index.html" class="btn">
-                Tenho interesse neste veículo
-            </a>
+            <button class="btn" onclick="abrirFormularioInteresse()">
+    Tenho interesse neste veículo
+</button>
+
+<div id="formulario-interesse" style="display:none; margin-top:20px;">
+    <h3>Tenho interesse neste veículo</h3>
+
+    <label>Data de início</label>
+    <input type="date" id="data_inicio" style="width:100%; padding:12px; margin:8px 0 15px;">
+
+    <label>Data de término</label>
+    <input type="date" id="data_fim" style="width:100%; padding:12px; margin:8px 0 15px;">
+
+    <label>Mensagem</label>
+    <textarea id="mensagem" rows="4" placeholder="Ex.: Tenho interesse em alugar este veículo para trabalhar com Uber." style="width:100%; padding:12px; margin:8px 0 15px;"></textarea>
+
+    <button class="btn" onclick="enviarInteresse()">
+        Enviar interesse
+    </button>
+
+    <p id="resultado-interesse" style="margin-top:15px;"></p>
+</div>
 
         </div>
     `;
