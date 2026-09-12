@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veículo | Aluga Fácil Veículos</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7f8;
+            color: #222;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #222;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        header span {
+            color: #159447;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .voltar {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #159447;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+
+        .foto {
+            width: 100%;
+            height: 350px;
+            background: #eef2f3;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .cidade {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .precos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .preco {
+            background: #f1f8f3;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .preco strong {
+            display: block;
+            color: #159447;
+            font-size: 22px;
+            margin-top: 5px;
+        }
+
+        .recursos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .recurso {
+            background: #eee;
+            padding: 9px 13px;
+            border-radius: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #159447;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .erro {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        @media (max-width: 700px) {
+            .precos {
+                grid-template-columns: 1fr;
+            }
+
+            .foto {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="index.html">
+        Aluga Fácil <span>Veículos</span>
+    </a>
+</header>
+
+<div class="container">
+
+    <a href="index.html" class="voltar">← Voltar para os veículos</a>
+
+    <div id="conteudo">
+        <div class="card">
+            <p>Carregando veículo...</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://clgwzlljyauqezdogeiq.supabase.co";
+
+/*
+ IMPORTANTE:
+ Não vou colocar a chave do seu projeto aqui.
+ Copie a mesma chave que já está no seu index.html,
+ na linha onde aparece SUPABASE_KEY, e cole abaixo.
+*/
+
+const SUPABASE_KEY = "sb_publishable_g_BCrMrWOq9sEt9LLJIyeA_YeNv4YDA";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function carregarVeiculo() {
+
+    const parametros = new URLSearchParams(window.location.search);
+    const id = parametros.get("id");
+
+    const conteudo = document.getElementById("conteudo");
+
+    if (!id) {
+        conteudo.innerHTML = `
+            <div class="card erro">
+                <h2>Veículo não encontrado</h2>
+                <p>O veículo solicitado não foi informado.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const { data: veiculo, error } = await supabaseClient
+        .from("veiculos")
+        .select("*")
+        .eq("id", id)
+        .eq("status", "aprovado")
+        .single();
+
+    if (error || !veiculo) {
+
+        console.error("Erro ao carregar veículo:", error);
+
+        conteudo.innerHTML = `
+            <div class="card erro">
+                <h2>Veículo não encontrado</h2>
+                <p>Este veículo pode não estar mais disponível.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    document.title =
+        ${veiculo.marca || ""} ${veiculo.modelo || ""} | Aluga Fácil;
+
+    let recursos = "";
+
+    if (veiculo.combustivel) {
+        recursos += <span class="recurso">⛽ ${veiculo.combustivel}</span>;
+    }
+
+    if (veiculo.quatro_portas) {
+        recursos += <span class="recurso">🚪 4 portas</span>;
+    }
+
+    if (veiculo.ar_condicionado) {
+        recursos += <span class="recurso">❄️ Ar-condicionado</span>;
+    }
+
+    if (veiculo.cambio) {
+        recursos += <span class="recurso">⚙️ ${veiculo.cambio}</span>;
+    }
+
+    if (veiculo.aceita_uber) {
+        recursos += <span class="recurso">🚗 Aceita Uber</span>;
+    }
+
+    if (veiculo.aceita_99) {
+        recursos += <span class="recurso">🚗 Aceita 99</span>;
+    }
+
+    let precos = "";
+
+    if (veiculo.preco_diaria) {
+        precos += `
+            <div class="preco">
+                Diária
+                <strong>
+                    R$ ${Number(veiculo.preco_diaria).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2
+                    })}
+                </strong>
+            </div>
+        `;
+    }
+
+    if (veiculo.preco_semanal) {
+        precos += `
+            <div class="preco">
+                Semanal
+                <strong>
+                    R$ ${Number(veiculo.preco_semanal).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2
+                    })}
+                </strong>
+            </div>
+        `;
+    }
+
+    if (veiculo.preco_mensal) {
+        precos += `
+            <div class="preco">
+                Mensal
+                <strong>
+                    R$ ${Number(veiculo.preco_mensal).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2
+                    })}
+                </strong>
+            </div>
+        `;
+    }
+
+    conteudo.innerHTML = `
+
+        <div class="card">
+
+            <div class="foto">
+                🚗
+            </div>
+
+            <h1>
+                ${veiculo.marca || ""} 
+                ${veiculo.modelo || ""}
+                ${veiculo.versao || ""}
+            </h1>
+
+            <div class="cidade">
+                📍 ${veiculo.cidade || "Cidade não informada"}
+            </div>
+
+            <p>
+                <strong>Ano:</strong> ${veiculo.ano || "Não informado"}
+            </p>
+
+            <p>
+                <strong>Quilometragem:</strong>
+                ${veiculo.quilometragem
+                    ? Number(veiculo.quilometragem).toLocaleString("pt-BR") + " km"
+                    : "Não informado"}
+            </p>
+
+            <p>
+                <strong>Cor:</strong> ${veiculo.cor || "Não informada"}
+            </p>
+
+            <div class="precos">
+                ${precos}
+            </div>
+
+            <h3>Características</h3>
+
+            <div class="recursos">
+                ${recursos || "<span class='recurso'>Informações não informadas</span>"}
+            </div>
+
+            <a href="index.html" class="btn">
+                Tenho interesse neste veículo
+            </a>
+
+        </div>
+    `;
+}
+
+document.addEventListener("DOMContentLoaded", carregarVeiculo);
+
+</script>
+
+</body>
+</html>
