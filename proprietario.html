@@ -266,17 +266,15 @@ lista.innerHTML = solicitacoesComDados.map(solicitacao => `
 
         <div style="margin-top:20px;">
 
-            <button
-                class="btn-aceitar"
-                onclick="alterarSolicitacao('${solicitacao.id}', 'aceito')">
-                ✅ Aceitar
-            </button>
+            ${solicitacao.status === "pendente" ? `
+    <button onclick="atualizarStatus('${solicitacao.id}', 'aceito')">
+        ✅ Aceitar
+    </button>
 
-            <button
-                class="btn-recusar"
-                onclick="alterarSolicitacao('${solicitacao.id}', 'recusado')">
-                ❌ Recusar
-            </button>
+    <button onclick="atualizarStatus('${solicitacao.id}', 'recusado')">
+        ❌ Recusar
+    </button>
+` : ""}
 
         </div>
 
