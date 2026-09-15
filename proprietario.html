@@ -177,52 +177,110 @@ async function carregarPainel() {
         return;
     }
 
-    lista.innerHTML = solicitacoes.map(solicitacao => `
+    const solicitacoesComDados = await Promise.all(
+    solicitacoes.map(async (solicitacao) => {
 
-        <div class="solicitacao">
+        // Buscar dados do veículo
+        const { data: veiculo } = await supabaseClient
+            .from("veiculos")
+            .select("marca, modelo, versao, ano, cidade")
+            .eq("id", solicitacao.veiculo_id)
+            .single();
 
-            <span class="status">
-                ${solicitacao.status || "pendente"}
-            </span>
+        // Buscar dados do motorista
+        const { data: motorista } = await supabaseClient
+            .from("usuarios")
+            .select("nome, telefone, whatsapp, cidade")
+            .eq("id", solicitacao.motorista_id)
+            .single();
 
-            <h3>🚗 Solicitação de aluguel</h3>
+        return {
+            ...solicitacao,
+            veiculo,
+            motorista
+        };
+    })
+);
 
-            <div class="info">
-                <strong>Veículo:</strong>
-                ${solicitacao.veiculo_id}
-            </div>
+lista.innerHTML = solicitacoesComDados.map(solicitacao => `
+    <div class="solicitacao">
 
-            <div class="info">
-                <strong>Motorista:</strong>
-                ${solicitacao.motorista_id}
-            </div>
+        <span class="status">
+            ${solicitacao.status || "pendente"}
+        </span>
 
-            <div class="info">
-                <strong>Data de início:</strong>
-                ${solicitacao.data_inicio || "Não informada"}
-            </div>
+        <h3>🚗 Solicitação de aluguel</h3>
 
-            <div class="info">
-                <strong>Data de término:</strong>
-                ${solicitacao.data_fim || "Não informada"}
-            </div>
-
-            <div class="info">
-                <strong>Mensagem:</strong><br>
-                ${solicitacao.mensagem || "Nenhuma mensagem enviada."}
-            </div>
-            <div style="margin-top:20px;">
-    <button class="btn-aceitar" onclick="alterarSolicitacao('${solicitacao.id}', 'aceito')">
-        ✅ Aceitar
-    </button>
-
-    <button class="btn-recusar" onclick="alterarSolicitacao('${solicitacao.id}', 'recusado')">
-        ❌ Recusar
-    </button>
-</div>
+        <div class="info">
+            <strong>Veículo:</strong>
+            ${solicitacao.veiculo
+                ? ${solicitacao.veiculo.marca || ""} ${solicitacao.veiculo.modelo || ""} ${solicitacao.veiculo.versao || ""}
+                : "Veículo não encontrado"}
         </div>
 
-    `).join("");
+        <div class="info">
+            <strong>Ano:</strong>
+            ${solicitacao.veiculo?.ano || "Não informado"}
+        </div>
+
+        <div class="info">
+            <strong>📍 Cidade:</strong>
+            ${solicitacao.veiculo?.cidade || "Não informada"}
+        </div>
+
+        <div class="info">
+            <strong>👤 Motorista:</strong>
+            ${solicitacao.motorista?.nome || "Nome não encontrado"}
+        </div>
+
+        <div class="info">
+            <strong>📱 Telefone:</strong>
+            ${solicitacao.motorista?.telefone || "Não informado"}
+        </div>
+
+        <div class="info">
+            <strong>💬 WhatsApp:</strong>
+            ${solicitacao.motorista?.whatsapp || "Não informado"}
+        </div>
+
+        <div class="info">
+            <strong>🏙️ Cidade do motorista:</strong>
+            ${solicitacao.motorista?.cidade || "Não informada"}
+        </div>
+
+        <div class="info">
+            <strong>📅 Data de início:</strong>
+            ${solicitacao.data_inicio || "Não informada"}
+        </div>
+
+        <div class="info">
+            <strong>📅 Data de término:</strong>
+            ${solicitacao.data_fim || "Não informada"}
+        </div>
+
+        <div class="info">
+            <strong>💬 Mensagem:</strong><br>
+            ${solicitacao.mensagem || "Nenhuma mensagem enviada."}
+        </div>
+
+        <div style="margin-top:20px;">
+
+            <button
+                class="btn-aceitar"
+                onclick="alterarSolicitacao('${solicitacao.id}', 'aceito')">
+                ✅ Aceitar
+            </button>
+
+            <button
+                class="btn-recusar"
+                onclick="alterarSolicitacao('${solicitacao.id}', 'recusado')">
+                ❌ Recusar
+            </button>
+
+        </div>
+
+    </div>
+`).join("");
 }
 async function alterarSolicitacao(id, novoStatus) {
 
