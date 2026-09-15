@@ -211,10 +211,12 @@ lista.innerHTML = solicitacoesComDados.map(solicitacao => `
 
         <h3>🚗 Solicitação de aluguel</h3>
 
-        <div class="info">
-            <strong>Veículo:</strong>
-            
-        </div>
+       <div class="info">
+    <strong>🚗 Veículo:</strong>
+    ${solicitacao.veiculo
+        ? ${solicitacao.veiculo.marca || "Marca não informada"} ${solicitacao.veiculo.modelo || "Modelo não informado"} ${solicitacao.veiculo.versao || ""}
+        : "Veículo não encontrado"}
+</div>
 
         <div class="info">
             <strong>Ano:</strong>
