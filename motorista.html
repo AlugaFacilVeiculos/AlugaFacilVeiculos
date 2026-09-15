@@ -284,12 +284,18 @@ async function carregarPainel() {
                         : ""
                     }
                 `
-                : `
-                    <p>
-                        ⏳ Aguardando resposta do proprietário.
-                    </p>
-                `
-            }
+                : solicitacao.status === "recusado"
+? `
+<p>
+❌ O proprietário recusou esta solicitação.
+</p>
+`
+: `
+<p>
+⏳ Aguardando resposta do proprietário.
+</p>
+`
+}
 
         </div>
 
