@@ -601,15 +601,13 @@ const mapaFotos = {};
         }
 
         const badge = veiculo.destaque ? "DESTAQUE" : "DISPONÍVEL";
-
+              const fotoHtml = mapaFotos[veiculo.id]
+    ? '<img src="' + mapaFotos[veiculo.id] + '" alt="' + (veiculo.marca || '') + ' ' + (veiculo.modelo || '') + '" style="width:100%;height:100%;object-fit:cover;">'
+    : "🚗";
         return `
             <div class="card">
 
-                <div class="car-image">
-    ${mapaFotos[veiculo.id]
-        ? <img src="${mapaFotos[veiculo.id]}" alt="${veiculo.marca} ${veiculo.modelo}" style="width:100%;height:100%;object-fit:cover;">
-        : "🚗"}
-</div>
+               <div class="car-image">${fotoHtml}</div>
 
                 <span class="badge">${badge}</span>
 
