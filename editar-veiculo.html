@@ -157,7 +157,23 @@ button {
 <input type="checkbox" id="quatro_portas">
  4 portas
 </label>
+<div style="margin-top:20px;">
+    <label><strong>📸 Fotos do veículo</strong></label>
 
+    <input
+        type="file"
+        id="fotos"
+        accept="image/*"
+        multiple
+        style="display:block;margin-top:10px;"
+    >
+
+    <p style="font-size:14px;color:#666;">
+        Você pode selecionar várias fotos.
+    </p>
+
+    <div id="lista-fotos"></div>
+</div>
 <button type="submit">💾 Salvar alterações</button>
 
 <a href="meus-veiculos.html" class="voltar">
