@@ -333,7 +333,66 @@ document.getElementById("formulario").addEventListener("submit", async function(
 
         return;
     }
+        // ===============================
+// ENVIO DAS FOTOS DO VEÍCULO
+// ===============================
 
+const arquivos = document.getElementById("fotos").files;
+
+if (arquivos.length > 0) {
+
+    mensagem.innerHTML = "📸 Enviando fotos...";
+
+    for (let i = 0; i < arquivos.length; i++) {
+
+        const arquivo = arquivos[i];
+
+        const nomeArquivo =
+            usuarioAtual.id + "/" +
+            veiculoId + "/" +
+            Date.now() + "-" +
+            arquivo.name;
+
+        const { error: erroUpload } =
+            await supabaseClient.storage
+                .from("veiculos")
+                .upload(nomeArquivo, arquivo);
+
+        if (erroUpload) {
+            console.error(erroUpload);
+
+            mensagem.innerHTML =
+                "❌ Erro ao enviar foto: " +
+                erroUpload.message;
+
+            return;
+        }
+
+        const { data: urlPublica } =
+            supabaseClient.storage
+                .from("veiculos")
+                .getPublicUrl(nomeArquivo);
+
+        const { error: erroFoto } =
+            await supabaseClient
+                .from("fotos_veiculos")
+                .insert({
+                    veiculo_id: veiculoId,
+                    url: urlPublica.publicUrl,
+                    ordem: i
+                });
+
+        if (erroFoto) {
+            console.error(erroFoto);
+
+            mensagem.innerHTML =
+                "❌ Erro ao registrar foto: " +
+                erroFoto.message;
+
+            return;
+        }
+    }
+}
     mensagem.innerHTML =
         "✅ Veículo atualizado com sucesso!";
 
