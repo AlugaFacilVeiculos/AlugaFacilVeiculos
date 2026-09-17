@@ -257,7 +257,15 @@ async function carregarVeiculos() {
                 <strong>📅 Mensal:</strong>
                 R$ ${veiculo.preco_mensal || "Não informado"}
             </div>
+            <div style="margin-top:20px;">
 
+<a
+    href="editar-veiculo.html?id=${veiculo.id}"
+    class="btn btn-principal">
+    ✏️ Editar veículo
+</a>
+
+</div>
         </div>
 
     `).join("");
