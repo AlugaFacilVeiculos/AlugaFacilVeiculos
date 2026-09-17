@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Editar veículo - Aluga Fácil Veículos</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button, a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button {
+    background: #198754;
+    color: white;
+}
+
+.voltar {
+    background: #555;
+    color: white;
+}
+
+#mensagem {
+    margin-top: 20px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>✏️ Editar veículo</h1>
+
+<p id="carregando">Carregando dados do veículo...</p>
+
+<form id="formulario" style="display:none;">
+
+<label>Marca</label>
+<input type="text" id="marca">
+
+<label>Modelo</label>
+<input type="text" id="modelo">
+
+<label>Versão</label>
+<input type="text" id="versao">
+
+<label>Ano</label>
+<input type="number" id="ano">
+
+<label>Quilometragem</label>
+<input type="number" id="quilometragem">
+
+<label>Cor</label>
+<input type="text" id="cor">
+
+<label>Cidade</label>
+<input type="text" id="cidade">
+
+<label>Combustível</label>
+<select id="combustivel">
+    <option value="">Selecione</option>
+    <option value="Gasolina">Gasolina</option>
+    <option value="Etanol">Etanol</option>
+    <option value="Flex">Flex</option>
+    <option value="Diesel">Diesel</option>
+    <option value="Híbrido">Híbrido</option>
+    <option value="Elétrico">Elétrico</option>
+</select>
+
+<label>Câmbio</label>
+<select id="cambio">
+    <option value="">Selecione</option>
+    <option value="Manual">Manual</option>
+    <option value="Automático">Automático</option>
+    <option value="Automatizado">Automatizado</option>
+</select>
+
+<label>Preço da diária</label>
+<input type="number" step="0.01" id="preco_diaria">
+
+<label>Preço semanal</label>
+<input type="number" step="0.01" id="preco_semanal">
+
+<label>Preço mensal</label>
+<input type="number" step="0.01" id="preco_mensal">
+
+<label>Caução</label>
+<input type="number" step="0.01" id="caucao">
+
+<label>Placa</label>
+<input type="text" id="placa">
+
+<label>Categoria</label>
+<input type="text" id="categoria">
+
+<label>
+<input type="checkbox" id="aceita_uber">
+ Aceita Uber
+</label>
+
+<label>
+<input type="checkbox" id="aceita_99">
+ Aceita 99
+</label>
+
+<label>
+<input type="checkbox" id="ar_condicionado">
+ Ar-condicionado
+</label>
+
+<label>
+<input type="checkbox" id="quatro_portas">
+ 4 portas
+</label>
+
+<button type="submit">💾 Salvar alterações</button>
+
+<a href="meus-veiculos.html" class="voltar">
+← Voltar
+</a>
+
+</form>
+
+<div id="mensagem"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://clgwzlljyauqezdogeiq.supabase.co";
+
+/*
+IMPORTANTE:
+COLE AQUI A MESMA CHAVE PUBLICÁVEL
+QUE JÁ ESTÁ SENDO USADA NO cadastrar-veiculo.html
+*/
+const SUPABASE_ANON_KEY = "sb_publishable_g_BCrMrWOq9sEt9LLJIyeA_YeNv4YDA";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+const parametros = new URLSearchParams(window.location.search);
+const veiculoId = parametros.get("id");
+
+let usuarioAtual = null;
+
+async function carregarVeiculo() {
+
+    const { data: { user }, error: erroUsuario } =
+        await supabaseClient.auth.getUser();
+
+    if (erroUsuario || !user) {
+        document.getElementById("mensagem").innerHTML =
+            "❌ Você precisa estar logado.";
+        return;
+    }
+
+    usuarioAtual = user;
+
+    if (!veiculoId) {
+        document.getElementById("mensagem").innerHTML =
+            "❌ Veículo não informado.";
+        return;
+    }
+
+    const { data: veiculo, error } = await supabaseClient
+        .from("veiculos")
+        .select("*")
+        .eq("id", veiculoId)
+        .eq("proprietario_id", user.id)
+        .single();
+
+    if (error || !veiculo) {
+        document.getElementById("mensagem").innerHTML =
+            "❌ Veículo não encontrado ou você não tem permissão para editá-lo.";
+        return;
+    }
+
+    document.getElementById("marca").value = veiculo.marca || "";
+    document.getElementById("modelo").value = veiculo.modelo || "";
+    document.getElementById("versao").value = veiculo.versao || "";
+    document.getElementById("ano").value = veiculo.ano || "";
+    document.getElementById("quilometragem").value = veiculo.quilometragem || "";
+    document.getElementById("cor").value = veiculo.cor || "";
+    document.getElementById("cidade").value = veiculo.cidade || "";
+    document.getElementById("combustivel").value = veiculo.combustivel || "";
+    document.getElementById("cambio").value = veiculo.cambio || "";
+    document.getElementById("preco_diaria").value = veiculo.preco_diaria || "";
+    document.getElementById("preco_semanal").value = veiculo.preco_semanal || "";
+    document.getElementById("preco_mensal").value = veiculo.preco_mensal || "";
+    document.getElementById("caucao").value = veiculo.caucao || "";
+    document.getElementById("placa").value = veiculo.placa || "";
+    document.getElementById("categoria").value = veiculo.categoria || "";
+
+    document.getElementById("aceita_uber").checked =
+        veiculo.aceita_uber === true;
+
+    document.getElementById("aceita_99").checked =
+        veiculo.aceita_99 === true;
+
+    document.getElementById("ar_condicionado").checked =
+        veiculo.ar_condicionado === true;
+
+    document.getElementById("quatro_portas").checked =
+        veiculo.quatro_portas === true;
+
+    document.getElementById("carregando").style.display = "none";
+    document.getElementById("formulario").style.display = "block";
+}
+
+document.getElementById("formulario").addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const mensagem = document.getElementById("mensagem");
+
+    mensagem.innerHTML = "⏳ Salvando alterações...";
+
+    const { error } = await supabaseClient
+        .from("veiculos")
+        .update({
+
+            marca: document.getElementById("marca").value,
+            modelo: document.getElementById("modelo").value,
+            versao: document.getElementById("versao").value,
+            ano: document.getElementById("ano").value || null,
+            quilometragem: document.getElementById("quilometragem").value || null,
+            cor: document.getElementById("cor").value,
+            cidade: document.getElementById("cidade").value,
+            combustivel: document.getElementById("combustivel").value,
+            cambio: document.getElementById("cambio").value,
+
+            preco_diaria:
+                document.getElementById("preco_diaria").value || null,
+
+            preco_semanal:
+                document.getElementById("preco_semanal").value || null,
+
+            preco_mensal:
+                document.getElementById("preco_mensal").value || null,
+
+            caucao:
+                document.getElementById("caucao").value || null,
+
+            placa: document.getElementById("placa").value,
+            categoria: document.getElementById("categoria").value,
+
+            aceita_uber:
+                document.getElementById("aceita_uber").checked,
+
+            aceita_99:
+                document.getElementById("aceita_99").checked,
+
+            ar_condicionado:
+                document.getElementById("ar_condicionado").checked,
+
+            quatro_portas:
+                document.getElementById("quatro_portas").checked
+
+        })
+        .eq("id", veiculoId)
+        .eq("proprietario_id", usuarioAtual.id);
+
+    if (error) {
+
+        console.error(error);
+
+        mensagem.innerHTML =
+            "❌ Erro ao salvar: " + error.message;
+
+        return;
+    }
+
+    mensagem.innerHTML =
+        "✅ Veículo atualizado com sucesso!";
+
+});
+
+carregarVeiculo();
+
+</script>
+
+</body>
+</html>
