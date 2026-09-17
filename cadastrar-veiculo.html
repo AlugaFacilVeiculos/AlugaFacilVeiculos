@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cadastrar veículo | Aluga Fácil</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7f9;
+    color: #222;
+}
+
+header {
+    background: #111827;
+    color: white;
+    padding: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+h2 {
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.checkbox input {
+    width: auto;
+}
+
+.btn {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.btn-principal {
+    background: #111827;
+    color: white;
+}
+
+.btn-voltar {
+    background: #e5e7eb;
+    color: #111827;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+#mensagem {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Aluga Fácil Veículos</h1>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>🚗 Cadastrar veículo</h2>
+
+        <p id="usuario-logado">Verificando usuário...</p>
+
+        <form id="form-veiculo">
+
+            <label>Marca *</label>
+            <input type="text" id="marca" required placeholder="Ex.: Fiat">
+
+            <label>Modelo *</label>
+            <input type="text" id="modelo" required placeholder="Ex.: Mobi">
+
+            <label>Versão</label>
+            <input type="text" id="versao" placeholder="Ex.: 1.0">
+
+            <label>Ano *</label>
+            <input type="number" id="ano" required min="1950" max="2100">
+
+            <label>Quilometragem</label>
+            <input type="number" id="quilometragem" min="0">
+
+            <label>Cor</label>
+            <input type="text" id="cor" placeholder="Ex.: Branco">
+
+            <label>Cidade *</label>
+            <input type="text" id="cidade" required placeholder="Ex.: Marília">
+
+            <label>Combustível</label>
+            <select id="combustivel">
+                <option value="">Selecione</option>
+                <option value="Flex">Flex</option>
+                <option value="Gasolina">Gasolina</option>
+                <option value="Etanol">Etanol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Elétrico">Elétrico</option>
+                <option value="Híbrido">Híbrido</option>
+            </select>
+
+            <label>Câmbio</label>
+            <select id="cambio">
+                <option value="">Selecione</option>
+                <option value="Manual">Manual</option>
+                <option value="Automático">Automático</option>
+                <option value="Automatizado">Automatizado</option>
+            </select>
+
+            <label>Preço da diária (R$)</label>
+            <input type="number" id="preco_diaria" step="0.01" min="0">
+
+            <label>Preço semanal (R$)</label>
+            <input type="number" id="preco_semanal" step="0.01" min="0">
+
+            <label>Preço mensal (R$)</label>
+            <input type="number" id="preco_mensal" step="0.01" min="0">
+
+            <label>Caução (R$)</label>
+            <input type="number" id="caucao" step="0.01" min="0">
+
+            <label class="checkbox">
+                <input type="checkbox" id="aceita_uber">
+                Aceita Uber
+            </label>
+
+            <label class="checkbox">
+                <input type="checkbox" id="aceita_99">
+                Aceita 99
+            </label>
+
+            <label class="checkbox">
+                <input type="checkbox" id="ar_condicionado">
+                Ar-condicionado
+            </label>
+
+            <label class="checkbox">
+                <input type="checkbox" id="quatro_portas">
+                4 portas
+            </label>
+
+            <button type="submit" class="btn btn-principal">
+                🚗 Cadastrar veículo
+            </button>
+
+            <a href="meus-veiculos.html" class="btn btn-voltar">
+                ← Voltar
+            </a>
+
+        </form>
+
+        <div id="mensagem"></div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "https://clgwzlljyauqezdogeiq.supabase.co";
+
+/*
+Use a mesma chave publicável que já está funcionando
+no seu site.
+*/
+
+const SUPABASE_KEY =
+    "sb_publishable_g_BCrMrWOq9sEt9LLJIyeA_YeNv4YDA";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+async function verificarUsuario() {
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+
+        document.getElementById("usuario-logado").textContent =
+            "Você precisa estar logado para cadastrar um veículo.";
+
+        document.getElementById("form-veiculo").style.display =
+            "none";
+
+        return null;
+    }
+
+    document.getElementById("usuario-logado").textContent =
+        "Usuário logado: " + user.email;
+
+    return user;
+}
+
+document.getElementById("form-veiculo")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const mensagem =
+        document.getElementById("mensagem");
+
+    mensagem.style.display = "block";
+    mensagem.textContent = "Cadastrando veículo...";
+
+    const user = await verificarUsuario();
+
+    if (!user) return;
+
+    const dados = {
+
+        proprietario_id: user.id,
+
+        marca: document.getElementById("marca").value,
+        modelo: document.getElementById("modelo").value,
+        versao: document.getElementById("versao").value,
+
+        ano: Number(
+            document.getElementById("ano").value
+        ),
+
+        quilometragem:
+            Number(document.getElementById("quilometragem").value) || 0,
+
+        cor:
+            document.getElementById("cor").value,
+
+        cidade:
+            document.getElementById("cidade").value,
+
+        combustivel:
+            document.getElementById("combustivel").value,
+
+        cambio:
+            document.getElementById("cambio").value,
+
+        preco_diaria:
+            Number(document.getElementById("preco_diaria").value) || 0,
+
+        preco_semanal:
+            Number(document.getElementById("preco_semanal").value) || 0,
+
+        preco_mensal:
+            Number(document.getElementById("preco_mensal").value) || 0,
+
+        caucao:
+            Number(document.getElementById("caucao").value) || 0,
+
+        aceita_uber:
+            document.getElementById("aceita_uber").checked,
+
+        aceita_99:
+            document.getElementById("aceita_99").checked,
+
+        ar_condicionado:
+            document.getElementById("ar_condicionado").checked,
+
+        quatro_portas:
+            document.getElementById("quatro_portas").checked,
+
+        status: "analise",
+
+        destaque: false
+    };
+
+    const { error } =
+        await supabaseClient
+            .from("veiculos")
+            .insert(dados);
+
+    if (error) {
+
+        console.error(error);
+
+        mensagem.textContent =
+            "❌ Erro ao cadastrar veículo: " +
+            error.message;
+
+        return;
+    }
+
+    mensagem.textContent =
+        "✅ Veículo cadastrado com sucesso!";
+
+    document.getElementById("form-veiculo").reset();
+
+});
+
+verificarUsuario();
+
+</script>
+
+</body>
+</html>
