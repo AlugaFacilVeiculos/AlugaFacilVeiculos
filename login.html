@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Entrar - Aluga Fácil Veículos</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: #f5f7fa;
+
+            color: #172033;
+
+        }
+
+        header {
+
+            background: white;
+
+            padding: 20px;
+
+            border-bottom: 1px solid #ddd;
+
+        }
+
+        .logo {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            color: #008f50;
+
+            text-decoration: none;
+
+        }
+
+        .container {
+
+            max-width: 430px;
+
+            margin: 60px auto;
+
+            padding: 20px;
+
+        }
+
+        .card {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 14px;
+
+            box-shadow: 0 4px 20px #00000010;
+
+        }
+
+        h1 {
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+        }
+
+        .subtitulo {
+
+            text-align: center;
+
+            color: #666;
+
+            margin-bottom: 25px;
+
+        }
+
+        label {
+
+            display: block;
+
+            margin: 15px 0 7px;
+
+            font-weight: bold;
+
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+        }
+
+        button {
+
+            width: 100%;
+
+            padding: 15px;
+
+            background: #00a65a;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 20px;
+
+        }
+
+        button:hover {
+
+            background: #008f50;
+
+        }
+
+        button:disabled {
+
+            opacity: 0.6;
+
+            cursor: wait;
+
+        }
+
+        .links {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            line-height: 2;
+
+        }
+
+        a {
+
+            color: #008f50;
+
+            text-decoration: none;
+
+        }
+
+        #mensagem {
+
+            margin-top: 15px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+        }
+
+        .erro {
+
+            color: #d00000;
+
+        }
+
+        .sucesso {
+
+            color: #008f50;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <a href="index.html" class="logo">
+
+        Aluga Fácil Veículos
+
+    </a>
+
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Bem-vindo!</h1>
+
+        <p class="subtitulo">
+
+            Entre na sua conta para continuar.
+
+        </p>
+
+        <form id="formLogin">
+
+            <label for="email">E-mail</label>
+
+            <input
+
+                type="email"
+
+                id="email"
+
+                placeholder="Digite seu e-mail"
+
+                required
+
+            >
+
+            <label for="senha">Senha</label>
+
+            <input
+
+                type="password"
+
+                id="senha"
+
+                placeholder="Digite sua senha"
+
+                required
+
+            >
+
+            <button type="submit" id="btnEntrar">
+
+                Entrar
+
+            </button>
+
+        </form>
+
+        <div id="mensagem"></div>
+
+        <div class="links">
+
+            <p>
+
+                Ainda não tem conta?
+
+                <a href="cadastro.html">
+
+                    Cadastre-se
+
+                </a>
+
+            </p>
+
+            <p>
+
+                <a href="index.html">
+
+                    Voltar para a página inicial
+
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // CONFIGURAÇÃO DO SUPABASE
+
+    // Substitua pelos dados do seu projeto.
+
+    const SUPABASE_URL = "COLE_A_URL_DO_SEU_SUPABASE";
+
+    const SUPABASE_ANON_KEY = "COLE_SUA_CHAVE_ANON_PUBLIC";
+
+    const supabaseClient = window.supabase.createClient(
+
+        SUPABASE_URL,
+
+        SUPABASE_ANON_KEY
+
+    );
+
+    const formLogin = document.getElementById("formLogin");
+
+    const mensagem = document.getElementById("mensagem");
+
+    const btnEntrar = document.getElementById("btnEntrar");
+
+    formLogin.addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+
+        const senha = document.getElementById("senha").value;
+
+        mensagem.textContent = "";
+
+        mensagem.className = "";
+
+        btnEntrar.disabled = true;
+
+        btnEntrar.textContent = "Entrando...";
+
+        try {
+
+            const { data, error } =
+
+                await supabaseClient.auth.signInWithPassword({
+
+                    email: email,
+
+                    password: senha
+
+                });
+
+            if (error) {
+
+                throw error;
+
+            }
+
+            mensagem.textContent = "Login realizado com sucesso!";
+
+            mensagem.className = "sucesso";
+
+            // Redirecionamento após o login.
+
+            // Vamos ajustar conforme o tipo de usuário.
+
+            window.location.href = "index.html";
+
+        } catch (error) {
+
+            mensagem.textContent =
+
+                "Erro ao entrar: confira seu e-mail e senha.";
+
+            mensagem.className = "erro";
+
+            console.error(error);
+
+        } finally {
+
+            btnEntrar.disabled = false;
+
+            btnEntrar.textContent = "Entrar";
+
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>
